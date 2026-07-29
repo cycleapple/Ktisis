@@ -20,7 +20,21 @@ public class ConfigManager : IDisposable {
 	private readonly IDalamudPluginInterface _dpi;
 
 	private bool _isLoaded;
-	public Configuration File { get; private set; } = null!;
+	private Configuration? _file;
+	public Configuration File {
+		get {
+			// The legacy migration path initializes the GUI before Load() runs.
+			// Keep configuration consumers safe until migration is confirmed,
+			// and repair any explicit null sections whenever it is accessed.
+			this._file ??= this.CreateDefault();
+			this.NormalizeSections(this._file);
+			return this._file;
+		}
+		private set {
+			this.NormalizeSections(value);
+			this._file = value;
+		}
+	}
 
 	public event OnConfigSaved? OnSaved;
 
