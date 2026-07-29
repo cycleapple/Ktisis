@@ -2,8 +2,8 @@
 	<PropertyGroup>
 		<Authors>Chirp</Authors>
 		<Company>Ktisis Tools</Company>
-		<Version>0.3.13</Version>
-		<PackageProjectUrl>https://github.com/ktisis-tools/Ktisis</PackageProjectUrl>
+		<Version>0.3.14.1</Version>
+		<PackageProjectUrl>https://github.com/cycleapple/Ktisis/tree/api13-tw</PackageProjectUrl>
 	</PropertyGroup>
 
 	<PropertyGroup>

@@ -1,12 +1,12 @@
 {
 	"Author": "Chirp",
 	"Name": "Ktisis v0.3",
-	"PunchLine": "A multifaceted scene editor and posing tool for GPose.",
-	"Description": "A multifaceted scene editor and posing tool for GPose.",
+	"PunchLine": "適用於集體動作模式的場景編輯與角色姿勢工具。",
+	"Description": "可在集體動作模式中編輯場景、角色姿勢、鏡頭及燈光。",
 	"InternalName": "Ktisis",
-	"RepoUrl": "https://github.com/ktisis-tools/Ktisis",
+	"RepoUrl": "https://github.com/cycleapple/Ktisis/tree/api13-tw",
 	"IconUrl": "https://github.com/ktisis-tools/Ktisis/raw/main/icon.png",
-	"AssemblyVersion": "0.3.9.2",
+	"AssemblyVersion": "0.3.14.1",
 	"ApplicableVersion": "any",
 	"DalamudApiLevel": 13,
 	"Tags": [
