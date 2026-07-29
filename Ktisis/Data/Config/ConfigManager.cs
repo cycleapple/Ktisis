@@ -41,6 +41,8 @@ public class ConfigManager : IDisposable {
 		try {
 			// TODO: Legacy migration
 			cfg = this.OpenConfigFile();
+			if (cfg != null)
+				this.NormalizeSections(cfg);
 			
 			if (cfg is { Version: < 10 }) {
 				cfg.Version = 10;
@@ -57,6 +59,7 @@ public class ConfigManager : IDisposable {
 
 		try {
 			cfg ??= this.CreateDefault();
+			this.NormalizeSections(cfg);
 		} catch (Exception err) {
 			Ktisis.Log.Error($"Failed to create default configuration:\n{err}");
 			throw;
@@ -82,6 +85,20 @@ public class ConfigManager : IDisposable {
 	}
 	
 	// Schema migration
+
+	private void NormalizeSections(Configuration cfg) {
+		cfg.Categories ??= SchemaReader.ReadCategories();
+		cfg.Editor ??= new();
+		cfg.File ??= new();
+		cfg.Gizmo ??= new();
+		cfg.Keybinds ??= new();
+		cfg.Locale ??= new();
+		cfg.Overlay ??= new();
+		cfg.AutoSave ??= new();
+		cfg.Presets ??= new();
+		cfg.PoseView ??= new();
+		cfg.Offsets ??= new();
+	}
 
 	private void MigrateSchema(Configuration cfg) {
 		Ktisis.Log.Debug("Updating category schema.");
