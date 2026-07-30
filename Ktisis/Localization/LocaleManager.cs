@@ -25,7 +25,12 @@ public class LocaleManager {
 
 	public void Initialize() {
 		// TODO: Listen for locale changes.
-		this.LoadLocale(this._cfg.File.Locale.LocaleId);
+		// Existing API13 installations only knew about en_US. Treat that legacy
+		// default as zh_TW so updating users receive the localized interface too.
+		var localeId = this._cfg.File.Locale.LocaleId == "en_US"
+			? "zh_TW"
+			: this._cfg.File.Locale.LocaleId;
+		this.LoadLocale(localeId);
 	}
 	
 	// Localization methods
