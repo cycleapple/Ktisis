@@ -14,7 +14,7 @@ namespace Ktisis.GameData.Excel;
 // Temporarily forking CharaMakeType while FacialFeatureOption is bugged -
 // It gets parsed as an int[8] rather than an int[8,7]. I've reached out to perchbird about this issue.
 
-[Sheet( "CharaMakeType", columnHash: 0x80d7db6d)]
+[Sheet( "CharaMakeType", columnHash: 0x50cdbeef)]
 public partial struct CharaMakeType(uint row) : IExcelRow<CharaMakeType> {
         public ExcelPage ExcelPage { get; private set; }
         public uint RowOffset { get; private set; }
@@ -49,55 +49,33 @@ public partial struct CharaMakeType(uint row) : IExcelRow<CharaMakeType> {
     public RowRef<Tribe> Tribe { get; private set; }
     public sbyte Gender { get; private set; }
 
+	// Keep the plugin's array model while decoding with the API14 generated schema.
 	static CharaMakeType IExcelRow<CharaMakeType>.Create(ExcelPage page, uint offset, uint row) {
-		var charaMakeStruct = new CharaMakeStructStruct[28];
-		for (var i = 0; i < 28; i++) {
-			charaMakeStruct[i].Menu = new RowRef<Lobby>(page.Module, page.ReadUInt32(offset + (ushort)(i * 428 + 0)), page.Language);
-			charaMakeStruct[i].SubMenuMask = page.ReadUInt32(offset + (ushort)(i * 428 + 4));
-			charaMakeStruct[i].Customize = page.ReadUInt32(offset + (ushort)(i * 428 + 8));
-			charaMakeStruct[i].SubMenuParam = new uint[100];
-			for (int SubMenuParamIndexer = 0; SubMenuParamIndexer < 100; SubMenuParamIndexer++)
-				charaMakeStruct[i].SubMenuParam[SubMenuParamIndexer] = page.ReadUInt32(offset + (ushort)(i * 428 + 12 + SubMenuParamIndexer * 4));
-			charaMakeStruct[i].InitVal = page.ReadUInt8(offset + (ushort)(i * 428 + 412));
-			charaMakeStruct[i].SubMenuType = page.ReadUInt8(offset + (ushort)(i * 428 + 413));
-			charaMakeStruct[i].SubMenuNum = page.ReadUInt8(offset + (ushort)(i * 428 + 414));
-			charaMakeStruct[i].LookAt = page.ReadUInt8(offset + (ushort)(i * 428 + 415));
-			charaMakeStruct[i].SubMenuGraphic = new byte[10];
-			for (int SubMenuGraphicIndexer = 0; SubMenuGraphicIndexer < 10; SubMenuGraphicIndexer++)
-				charaMakeStruct[i].SubMenuGraphic[SubMenuGraphicIndexer] = page.ReadUInt8(offset + (ushort)(i * 428 + 416 + SubMenuGraphicIndexer * 1));
-		}
-
-		var voiceStruct = new byte[12];
-		for (var i = 0; i < 12; i++)
-			voiceStruct[i] = page.ReadUInt8(offset + (ushort)(11984 + i * 1));
-
-		var facialFeatureOption = new int[8,7];
-		for (var x = 0; x < 8; x++) {
-			for (var y = 0; y < 7; y++)
-				facialFeatureOption[x, y] = page.ReadInt32( offset + (ushort)(11996 + x * 28 + y * 4));
-		}
-
-		var equipment = new EquipmentStruct[3];
-		for (var i = 0; i < 3; i++) {
-			equipment[i].Helmet = page.ReadUInt64(offset + (ushort)(i * 56 + 12224));
-			equipment[i].Top = page.ReadUInt64(offset + (ushort)(i * 56 + 12232));
-			equipment[i].Gloves = page.ReadUInt64(offset + (ushort)(i * 56 + 12240));
-			equipment[i].Legs = page.ReadUInt64(offset + (ushort)(i * 56 + 12248));
-			equipment[i].Shoes = page.ReadUInt64(offset + (ushort)(i * 56 + 12256));
-			equipment[i].Weapon = page.ReadUInt64(offset + (ushort)(i * 56 + 12264));
-			equipment[i].SubWeapon = page.ReadUInt64(offset + (ushort)(i * 56 + 12272));
-		}
-		
-		return new CharaMakeType(row) {
-                ExcelPage = page,
-                RowOffset = offset,
-			CharaMakeStruct = charaMakeStruct,
-			VoiceStruct = voiceStruct,
-			FacialFeatureOption = facialFeatureOption,
-			Equipment = equipment,
-			Race = page.ReadRowRef<Race>(0, offset),
-			Tribe = page.ReadRowRef<Tribe>(1, offset),
-			Gender = page.ReadColumn<sbyte>(2, offset)
-		};
-	}
+        var native = new Lumina.Excel.Sheets.CharaMakeType(page, offset, row);
+        var menus = new CharaMakeStructStruct[native.CharaMakeStruct.Count];
+        for (var i = 0; i < menus.Length; i++) {
+            var entry = native.CharaMakeStruct[i];
+            menus[i] = new CharaMakeStructStruct {
+                Menu = entry.Menu, SubMenuMask = entry.SubMenuMask, Customize = entry.Customize,
+                SubMenuParam = System.Linq.Enumerable.ToArray(entry.SubMenuParam), InitVal = entry.InitVal,
+                SubMenuType = entry.SubMenuType, SubMenuNum = entry.SubMenuNum, LookAt = entry.LookAt,
+                SubMenuGraphic = System.Linq.Enumerable.ToArray(entry.SubMenuGraphic)
+            };
+        }
+        var features = new int[8, 7];
+        for (var i = 0; i < 8; i++) {
+            var entry = native.FacialFeatureOption[i];
+            int[] values = [entry.Option1, entry.Option2, entry.Option3, entry.Option4, entry.Option5, entry.Option6, entry.Option7];
+            for (var j = 0; j < 7; j++) features[i, j] = values[j];
+        }
+        var equipment = new EquipmentStruct[native.Equipment.Count];
+        for (var i = 0; i < equipment.Length; i++) {
+            var entry = native.Equipment[i];
+            equipment[i] = new EquipmentStruct { Helmet = entry.Helmet, Top = entry.Top, Gloves = entry.Gloves,
+                Legs = entry.Legs, Shoes = entry.Shoes, Weapon = entry.Weapon, SubWeapon = entry.SubWeapon };
+        }
+        return new CharaMakeType(row) { ExcelPage = page, RowOffset = offset, CharaMakeStruct = menus,
+            VoiceStruct = System.Linq.Enumerable.ToArray(native.VoiceStruct), FacialFeatureOption = features,
+            Equipment = equipment, Race = native.Race, Tribe = native.Tribe, Gender = native.Gender };
+    }
 }

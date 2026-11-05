@@ -78,7 +78,7 @@ public struct ItemSheet : IExcelRow<ItemSheet> {
 	
 	// Equip slots
 
-	[Sheet("EquipSlotCategory")]
+	[Sheet("EquipSlotCategory", 4104873044u)]
 	private struct EquipSlotCategoryRow(uint row) : IExcelRow<EquipSlotCategoryRow> {
         public ExcelPage ExcelPage { get; init; }
         public uint RowOffset { get; init; }
