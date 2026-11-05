@@ -1,4 +1,4 @@
-﻿using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
@@ -11,6 +11,8 @@ namespace Ktisis.GameData.Excel;
 
 [Sheet("BNpcBase", columnHash: 0xD5D82616)]
 public struct BattleNpc(uint row) : IExcelRow<BattleNpc>, INpcBase {
+        public ExcelPage ExcelPage { get; init; }
+        public uint RowOffset { get; init; }
 	public uint RowId { get; } = row;
 
 	public float Scale { get; init; }
@@ -21,6 +23,8 @@ public struct BattleNpc(uint row) : IExcelRow<BattleNpc>, INpcBase {
 
 	static BattleNpc IExcelRow<BattleNpc>.Create(ExcelPage page, uint offset, uint row) {
 		return new BattleNpc(row) {
+                ExcelPage = page,
+                RowOffset = offset,
 			Scale = page.ReadColumn<float>(4, offset),
 			ModelChara = page.ReadRowRef<ModelChara>(5, offset),
 			Customize = page.ReadRowRef<BNpcCustomize>(6, offset),
@@ -44,12 +48,16 @@ public struct BattleNpc(uint row) : IExcelRow<BattleNpc>, INpcBase {
 	
 	[Sheet("BNpcCustomize", columnHash: 0x18f060d4)]
 	private struct BNpcCustomize(uint row) : IExcelRow<BNpcCustomize> {
+        public ExcelPage ExcelPage { get; init; }
+        public uint RowOffset { get; init; }
 		public uint RowId { get; } = row;
 
 		public CustomizeContainer Customize { get; private init; }
 
 		static BNpcCustomize IExcelRow<BNpcCustomize>.Create(ExcelPage page, uint offset, uint row) {
 			return new BNpcCustomize(row) {
+                ExcelPage = page,
+                RowOffset = offset,
 				Customize = page.ReadCustomize(0, offset)
 			};
 		}

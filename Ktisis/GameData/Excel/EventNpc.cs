@@ -1,4 +1,4 @@
-﻿using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
@@ -11,6 +11,8 @@ namespace Ktisis.GameData.Excel;
 
 [Sheet("ENpcBase", columnHash: 0x5ba9e1a6)]
 public struct EventNpc(uint row) : IExcelRow<EventNpc>, INpcBase {
+        public ExcelPage ExcelPage { get; init; }
+        public uint RowOffset { get; init; }
 	public uint RowId { get; } = row;
 
 	public RowRef<ModelChara> ModelChara { get; init; }
@@ -21,6 +23,8 @@ public struct EventNpc(uint row) : IExcelRow<EventNpc>, INpcBase {
 
 	static EventNpc IExcelRow<EventNpc>.Create(ExcelPage page, uint offset, uint row) {
 		return new EventNpc(row) {
+                ExcelPage = page,
+                RowOffset = offset,
 			Name = $"E:{row:D7}",
 			ModelChara = page.ReadRowRef<ModelChara>(35, offset),
 			Customize = page.ReadCustomize(36, offset),

@@ -1,4 +1,4 @@
-﻿using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 using Lumina.Excel;
 
@@ -9,6 +9,8 @@ namespace Ktisis.GameData.Excel;
 
 [Sheet("NpcEquip", columnHash: 0x7eaeb95c)]
 public struct NpcEquipment(uint row) : IExcelRow<NpcEquipment> {
+        public ExcelPage ExcelPage { get; init; }
+        public uint RowOffset { get; init; }
 	public uint RowId { get; } = row;
 
 	public WeaponModelId MainHand { get; private set; }
@@ -18,6 +20,8 @@ public struct NpcEquipment(uint row) : IExcelRow<NpcEquipment> {
 
 	static NpcEquipment IExcelRow<NpcEquipment>.Create(ExcelPage page, uint offset, uint row) {
 		return new NpcEquipment(row) {
+                ExcelPage = page,
+                RowOffset = offset,
 			MainHand = page.ReadWeapon(0, offset),
 			OffHand = page.ReadWeapon(3, offset),
 			Equipment = page.ReadEquipment(6, offset)

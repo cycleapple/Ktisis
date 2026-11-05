@@ -16,6 +16,8 @@ namespace Ktisis.GameData.Excel;
 
 [Sheet( "CharaMakeType", columnHash: 0x80d7db6d)]
 public partial struct CharaMakeType(uint row) : IExcelRow<CharaMakeType> {
+        public ExcelPage ExcelPage { get; private set; }
+        public uint RowOffset { get; private set; }
 	public uint RowId { get; } = row;
 
 	public struct CharaMakeStructStruct {
@@ -87,6 +89,8 @@ public partial struct CharaMakeType(uint row) : IExcelRow<CharaMakeType> {
 		}
 		
 		return new CharaMakeType(row) {
+                ExcelPage = page,
+                RowOffset = offset,
 			CharaMakeStruct = charaMakeStruct,
 			VoiceStruct = voiceStruct,
 			FacialFeatureOption = facialFeatureOption,

@@ -1,4 +1,4 @@
-﻿using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 
 using Lumina.Excel;
 
@@ -10,6 +10,8 @@ namespace Ktisis.GameData.Excel;
 
 [Sheet("ENpcResident", columnHash: 0xf74fa88c)]
 public struct ResidentNpc(uint row) : IExcelRow<ResidentNpc>, INpcBase {
+        public ExcelPage ExcelPage { get; init; }
+        public uint RowOffset { get; init; }
 	public uint RowId { get; } = row;
 
 	public byte Map { get; init; }
@@ -19,6 +21,8 @@ public struct ResidentNpc(uint row) : IExcelRow<ResidentNpc>, INpcBase {
 		var singular = page.ReadColumn<string>(0, offset);
 		var article = page.ReadColumn<sbyte>(7, offset);
 		return new ResidentNpc(row) {
+                ExcelPage = page,
+                RowOffset = offset,
 			Name = singular.FormatName(article) ?? $"E:{row:D7}",
 			Map = page.ReadColumn<byte>(9, offset),
 			EventNpc = new RowRef<EventNpc>(page.Module, row, page.Language)

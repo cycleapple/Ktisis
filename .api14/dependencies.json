@@ -1,0 +1,8 @@
+[
+  {
+    "path": "GLib",
+    "baseCommit": "91cb2dfc8b3be56cba08073d42127747ed41d121",
+    "patch": "patches/4aee354e7fdc3f88.patch",
+    "sha256": "291099b37900218a8ae3e6db5a8bc5eb800158d65b862b41d9662b886785bd4f"
+  }
+]
